@@ -1,0 +1,151 @@
+---
+import { ChevronDownIcon, GlobeAltIcon } from "@heroicons/react/24/solid";
+
+const {
+  name,
+  role,
+  field,
+  bgColor,
+  bannerUrl,
+  avatarUrl,
+  fullBio,
+  presentation,
+  performance,
+  socialMedia,
+} = Astro.props;
+---
+
+<div class="w-full">
+  <div
+    class="profile-card relative bg-white rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl"
+    data-expanded="false"
+  >
+    <div class="relative">
+      <div
+        class:list={[
+          "h-24  rounded-t-xl",
+          bgColor
+        ]}
+      >
+        {
+          bannerUrl && (
+            <img src={bannerUrl} alt={name} class="rounded-t-xl h-24 " />
+          )
+        }
+      </div>
+      <img
+        src={avatarUrl}
+        alt={name}
+        class="absolute w-24 h-24 rounded-full border-4 border-white shadow-lg transform -translate-y-1/2 left-4"
+      />
+    </div>
+
+    <div class="p-4 pt-16">
+      <div class="space-y-2 items-stretch h-40">
+        <h2 class="text-xl font-bold text-gray-800">{name}</h2>
+        <p class="text-blue-600 font-semibold text-sm">{role}</p>
+        <p class="text-gray-600 font-bold text-sm flex gap-2 items-center">
+          {field}
+          {
+            socialMedia && (
+              <a href={socialMedia}>
+                <GlobeAltIcon className="h-4 w-4 left-2 text-blue-500" />
+              </a>
+            )
+          }
+        </p>
+        <p class="text-gray-700 mt-2 text-sm leading-relaxed line-clamp-3">
+          {performance}
+        </p>
+      </div>
+
+      <div class="expanded-content absolute hidden mt-4 space-y-4 pt-4">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3
+            class="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2"
+          >
+            <span class="w-1 h-6 bg-blue-600 rounded-full"></span>
+            Apresentação
+          </h3>
+          <p class="text-gray-700 text-sm leading-relaxed">{presentation}</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3
+            class="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2"
+          >
+            <span class="w-1 h-6 bg-purple-600 rounded-full"></span>
+            Biografia
+          </h3>
+          <p class="text-gray-700 text-sm leading-relaxed">{fullBio}</p>
+        </div>
+      </div>
+
+      <button
+        class="expand-button mt-8 w-full flex justify-center gap-2 py-2 bg-white hover:bg-gray-100 border border-transparent hover:border-gray-400 font-bold py-2 px-4 rounded-full"
+      >
+        <span class="text-sm font-medium">Ver mais</span>
+        <ChevronDownIcon className="h-4 w-4" />
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const profileCards = document.querySelectorAll(".profile-card");
+
+  profileCards.forEach((card) => {
+    const expandedContent = card.querySelector(".expanded-content");
+    const expandButton = card.querySelector(".expand-button");
+    const buttonText = expandButton?.querySelector("span");
+    const buttonIcon = expandButton?.querySelector("svg");
+
+    expandButton?.addEventListener("click", () => {
+      const isExpanded = card.getAttribute("data-expanded") === "true";
+
+      document.querySelectorAll(".expanded-content").forEach((el) => {
+        profileCards.forEach((card) =>
+          card.setAttribute("data-expanded", "false"),
+        );
+
+        el?.classList.add("hidden");
+        el!.parentElement!.style.zIndex = "1";
+
+        const button = el!.parentElement!.querySelector(".expand-button");
+        button?.querySelector("svg")?.classList.remove("rotate-180");
+        button!.querySelector("span")!.textContent = "Ver mais";
+      });
+
+      if (isExpanded) {
+        expandedContent?.classList.add("hidden");
+        card.setAttribute("data-expanded", "false");
+        buttonText!.textContent = "Ver mais";
+        buttonIcon?.classList.remove("rotate-180");
+      } else {
+        expandedContent?.classList.remove("hidden");
+        card.setAttribute("data-expanded", "true");
+        (card as HTMLElement).style.zIndex = "100";
+        buttonText!.textContent = "Ver menos";
+        buttonIcon?.classList.add("rotate-180");
+      }
+    });
+  });
+</script>
+
+<style>
+  .profile-card {
+    --collapsed-height: 20rem;
+    --expanded-height: auto;
+  }
+
+  .expanded-content {
+    left: 0;
+    top: calc(100% - 30px);
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding: 16px;
+    z-index: 10;
+  }
+</style>
